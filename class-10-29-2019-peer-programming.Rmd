@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(googlesheets4)
 library(tidyverse)
+library(infer)
 sheets_deauth()
 ```
 
@@ -30,10 +31,28 @@ sampling_data %>%
   )
 
 
-bead_model <- tibble(replicate = 1:10000,
-            bead = sample(c("Red", "White"), 10000, replace = TRUE, prob = c(0.2, 0.8)))
+bead_model <- tibble(bead = sample(c("Red", "White"), 10000, replace = TRUE, prob = c(0.2, 0.8)))
 
-bead_model
+bead_model<-bead_model %>% 
+  rep_sample_n(size = 25, replace = FALSE, reps = 1000) %>% 
+  group_by(replicate) %>% 
+  summarize(red = sum(bead=="Red")) %>% 
+  mutate(white=25-red) %>% 
+  mutate(prop1 = red/25)
+
+bead_model %>% 
+  ggplot(aes(x = prop1)) +
+  geom_bar(bins = 30, binwidth = .02) +
+  geom_vline(xintercept = .6, col = "red")+
+  labs(
+    title = "Proportion of Red Balls",
+    x = "Proportion",
+    y = "Count",
+    caption = "Data collected from in class sampling activity"
+  )
+
+
+            
 
 
 ```
