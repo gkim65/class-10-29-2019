@@ -1,0 +1,42 @@
+---
+title: "Class"
+author: "Elizabeth Pachus"
+date: "10/29/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(googlesheets4)
+library(tidyverse)
+sheets_deauth()
+```
+
+```{r}
+
+sampling_data <- read_sheet("1cgP-e6THVfiW5TJ95QhX3jkNxKvc8Sicp9k_BkSRd2I") %>% 
+  na.exclude() %>% 
+  # or drop_na()
+  mutate(prop = red/(red + white))
+
+sampling_data %>% 
+  ggplot(aes(x = prop)) +
+  geom_histogram(bins = 30, binwidth = .02) +
+  labs(
+    title = "Proportion of Red Balls",
+    x = "Proportion",
+    y = "Count",
+    caption = "Data collected from in class sampling activity"
+  )
+
+
+bead_model <- tibble(replicate = 1:10000,
+            bead = sample(c("Red", "White"), 10000, replace = TRUE, prob = c(0.2, 0.8)))
+
+bead_model
+
+
+```
+
+
+## R Markdown
